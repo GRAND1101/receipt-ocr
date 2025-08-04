@@ -1,38 +1,39 @@
 # 환경설정
 .env
 
-# 테스트 이미지 및 영수증 이미지
+# 이미지 파일 전부 무시
 *.jpg
-*.JPG
 *.jpeg
-test.jpg
-test2.jpg
-test11.jpg
-순대국.jpg
-스타벅스.JPG
-이마트.jpg
-편의점.jpg
+*.JPG
+*.png
+*.PNG
+*.psd
+
+# 문서 파일 무시
+*.ppt
+*.pptx
+*.xlsx
+*.xls
+*.hwp
+*.doc
+*.docx
 
 # 테스트 및 결과 파일
 *.txt
-ocr_output.txt
-parsed_result.txt
-백업.txt
-
-# 학습/저장 JSON 파일
 *.json
-known_stores.json
-store_learning.json
-
-# 파이썬 테스트 파일
-OCR_test.py
-OCR_test - 복사본.py
-test.py
-test11.py
 
 # DB 파일
 *.db
-user_data.db
+*.sqlite3
+*.sql
+*.sqlpro
 
-# DB 서브 디렉토리 전체 무시
+# 파이썬 테스트 파일
+test*.py
+OCR_test*
+import sqlite3.py
+
+# 무시할 폴더
 /db 및 easyOCR/DB/
+구성/
+소프트웨어 공학/
