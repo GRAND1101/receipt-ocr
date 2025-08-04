@@ -34,4 +34,5 @@ test11.py
 *.db
 user_data.db
 
+# DB 서브 디렉토리 전체 무시
 /db 및 easyOCR/DB/
