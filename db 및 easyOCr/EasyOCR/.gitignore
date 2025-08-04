@@ -1,0 +1,37 @@
+# 환경설정
+.env
+
+# 테스트 이미지 및 영수증 이미지
+*.jpg
+*.JPG
+*.jpeg
+test.jpg
+test2.jpg
+test11.jpg
+순대국.jpg
+스타벅스.JPG
+이마트.jpg
+편의점.jpg
+
+# 테스트 및 결과 파일
+*.txt
+ocr_output.txt
+parsed_result.txt
+백업.txt
+
+# 학습/저장 JSON 파일
+*.json
+known_stores.json
+store_learning.json
+
+# 파이썬 테스트 파일
+OCR_test.py
+OCR_test - 복사본.py
+test.py
+test11.py
+
+# DB 파일
+*.db
+user_data.db
+
+/db 및 easyOCR/DB/
