@@ -17,7 +17,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 포트 설정 (Render는 자동 감지)
-EXPOSE 10000
+EXPOSE 8080
 
 # 앱 실행 (src.app.py의 app 객체)
-CMD ["gunicorn", "src.app:app", "--bind", "0.0.0.0:$PORT"]
+CMD ["gunicorn", "src.app:app", "--bind", "0.0.0.0:8080"]
