@@ -318,7 +318,10 @@ def correct_transaction(transaction_id):
     return jsonify({"status": "success", "updated": {field: value}}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 10000))  # Render는 PORT 환경변수 사용
+    app.run(host='0.0.0.0', port=port)
+
 
 
 
