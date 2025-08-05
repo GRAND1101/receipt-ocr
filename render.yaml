@@ -1,15 +1,12 @@
 services:
   - type: web
-    name: ocr-flask-app
-    runtime: python
-    buildCommand: |
-      apt-get update
-      apt-get install -y tesseract-ocr tesseract-ocr-kor
-      pip install -r requirements.txt
-    startCommand: gunicorn app:app
-    envVars:
+    name: receipt-ocr         # Render에 표시될 서비스 이름
+    env: docker               # Dockerfile 기반 배포
+    plan: free                # Render 무료 플랜 사용
+
+    envVars:                 # 환경 변수 (Flask용 OAuth 등)
       - key: SECRET_KEY
-        value: your-secret
+        value: your-secret-key
       - key: GOOGLE_CLIENT_ID
         value: your-google-client-id
       - key: GOOGLE_CLIENT_SECRET
