@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://receipt-ocr-1zqc.onrender.com";
+const API_BASE_URL = "https://receipt-ocr-1.onrender.com";
 let expenseChart, statsChart;
 
 let currentStep = 0;
