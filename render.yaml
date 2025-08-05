@@ -2,7 +2,10 @@ services:
   - type: web
     name: ocr-flask-app
     runtime: python
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: |
+      apt-get update
+      apt-get install -y tesseract-ocr tesseract-ocr-kor
+      pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
       - key: SECRET_KEY
