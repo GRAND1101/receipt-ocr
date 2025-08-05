@@ -98,7 +98,8 @@ google = oauth.register(
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
+    client_kwargs={'scope': 'openid email profile'},
+    redirect_uri=os.getenv("https://receipt-ocr-tzqc.onrender.com/auth")  # ✅ 이 줄을 반드시 추가
 )
 
 # ✅ 로그인 매니저
@@ -319,3 +320,4 @@ def correct_transaction(transaction_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
