@@ -88,8 +88,10 @@ app = Flask(__name__, static_folder=UI_PATH, static_url_path='')
 CORS(app, supports_credentials=True)
 app.secret_key = os.getenv("SECRET_KEY")
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-os.environ['TESSDATA_PREFIX'] = r'C:\Program Files\Tesseract-OCR\tessdata'
+# ✅ Render 배포용에서는 아래 줄 제거 또는 조건 처리
+if os.name == 'nt':  # Windows에서만 실행
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    os.environ['TESSDATA_PREFIX'] = r'C:\Program Files\Tesseract-OCR\tessdata'
 
 # ✅ OAuth 설정
 oauth = OAuth(app)
@@ -321,6 +323,7 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 10000))  # Render는 PORT 환경변수 사용
     app.run(host='0.0.0.0', port=port)
+
 
 
 
