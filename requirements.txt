@@ -7,3 +7,5 @@ python-dotenv
 pytesseract
 opencv-python
 Pillow
+requests
+
