@@ -125,7 +125,7 @@ def index():
 
 @app.route('/login')
 def login():
-    return google.authorize_redirect(url_for('callback', _external=True))
+    return google.authorize_redirect(url_for('callback', _external=True, _scheme='https'))
 
 @app.route('/login/callback')
 def callback():
@@ -323,6 +323,7 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 10000))  # Render는 PORT 환경변수 사용
     app.run(host='0.0.0.0', port=port)
+
 
 
 
