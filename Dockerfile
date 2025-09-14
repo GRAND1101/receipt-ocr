@@ -22,8 +22,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 앱 코드 복사
 COPY . /app
 
-# 포트 (Render는 $PORT 사용)
+# Render는 지정 포트 사용
 EXPOSE 8080
 
-# Gunicorn 실행
-CMD ["bash", "-lc", "gunicorn app:app --bind 0.0.0.0:${PORT:-8080}"]
+# Tesseract 내부 스레드 제한 (메모리 폭주 방지)
+ENV OMP_THREAD_LIMIT=1
+
+# Gunicorn 실행 (타임아웃/스레드 튜닝 포함)
+CMD ["bash", "-lc", "gunicorn app:app \
+  --bind 0.0.0.0:${PORT:-8080} \
+  --workers 1 \
+  --threads 2 \
+  --timeout 120 \
+  --graceful-timeout 30 \
+  --keep-alive 5"]
