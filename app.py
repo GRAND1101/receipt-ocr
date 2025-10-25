@@ -13,6 +13,7 @@ import datetime
 import sqlite3
 from contextlib import closing
 from parser import parse_receipt_text
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ==========================
 # 기본 설정/경로
@@ -96,6 +97,7 @@ def extract_bottom_amount(img):
 load_dotenv()
 
 app = Flask(__name__, static_folder=UI_PATH, static_url_path='')
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # ✅ ← 여기에 추가
 CORS(app, supports_credentials=True)
 app.secret_key = os.getenv("SECRET_KEY") or "change-me"
 
@@ -425,4 +427,5 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))  # Render는 PORT 사용
     # 개발 편의를 위해 debug는 필요 시만
     app.run(host='0.0.0.0', port=port)
+
 
