@@ -190,18 +190,26 @@ def ocr_endpoint():
 
     # ✅ DB 저장 (ocr_store에 fallback 적용)
     ocr_original_value = roi_brand if roi_brand else parsed_result.get("가맹점")
-    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
-        c = conn.cursor()
-        c.execute('''
-            INSERT INTO transactions (user_id, store, amount, date, category, ocr_store, deleted_at)
-            VALUES (?, ?, ?, ?, ?, ?, NULL)
-        ''', (current_user.id,
-              parsed_result.get("가맹점"),
-              parsed_result.get("총금액"),
-              date_value,
-              parsed_result.get("카테고리"),
-              ocr_original_value))
-    return jsonify({"status": "success", "receipt": parsed_result, "raw_text": ocr_text, "roi_brand": roi_brand})
+with closing(sqlite3.connect(DB_PATH)) as conn, conn:
+    c = conn.cursor()
+    cur = c.execute('''
+        INSERT INTO transactions (user_id, store, amount, date, category, ocr_store, deleted_at)
+        VALUES (?, ?, ?, ?, ?, ?, NULL)
+    ''', (current_user.id,
+          parsed_result.get("가맹점"),
+          parsed_result.get("총금액"),
+          date_value,
+          parsed_result.get("카테고리"),
+          ocr_original_value))
+    tx_id = cur.lastrowid  # ✅ 새 레코드 ID
+
+return jsonify({
+    "status": "success",
+    "transaction_id": tx_id,          # ✅ 추가
+    "receipt": parsed_result,
+    "raw_text": ocr_text,
+    "roi_brand": roi_brand
+})
 
 # ✅ 거래 내역 (삭제 제외)
 @app.route('/api/user-data', methods=['GET'])
@@ -391,3 +399,4 @@ def restore_transaction(transaction_id):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))  # Render는 PORT 환경변수 사용
     app.run(host='0.0.0.0', port=port)
+
