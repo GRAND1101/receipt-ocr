@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, request, jsonify
 from authlib.integrations.flask_client import OAuth
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_cors import CORS
 from dotenv import load_dotenv
 import pytesseract
@@ -93,10 +93,10 @@ UI_PATH = os.path.join(os.path.dirname(__file__), 'webapp-ui')
 
 app = Flask(__name__, static_folder=UI_PATH, static_url_path='')
 CORS(app, supports_credentials=True)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY") or "dev-secret-change-me"
 
-# ✅ Render 배포용에서는 아래 줄 제거 또는 조건 처리
-if os.name == 'nt':  # Windows에서만 실행
+# ✅ Windows일 때만 Tesseract 경로 지정 (Render는 Linux)
+if os.name == 'nt':
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     os.environ['TESSDATA_PREFIX'] = r'C:\Program Files\Tesseract-OCR\tessdata'
 
@@ -112,19 +112,28 @@ google = oauth.register(
 
 # ✅ 로그인 매니저
 login_manager = LoginManager()
-@login_manager.init_app(app)
+login_manager.init_app(app)
 
-class User(UserMixin):
+# ✅ Flask-Login 요구 인터페이스를 직접 구현 (UserMixin 제거)
+class AppUser:
     def __init__(self, id_, name, email):
-        self.id = id_
+        self.id = str(id_)
         self.name = name
         self.email = email
+    @property
+    def is_authenticated(self): return True
+    @property
+    def is_active(self): return True
+    @property
+    def is_anonymous(self): return False
+    def get_id(self): return self.id
 
+# 메모리 내 사용자 캐시
 users = {}
 
 @login_manager.user_loader
-def load_user(user_id):
-    return users.get(user_id)
+def load_user(user_id: str):
+    return users.get(str(user_id))
 
 @app.route('/')
 def index():
@@ -132,13 +141,14 @@ def index():
 
 @app.route('/login')
 def login():
+    # Render(HTTPS)에서 외부 콜백 URL 생성
     return google.authorize_redirect(url_for('callback', _external=True, _scheme='https'))
 
 @app.route('/login/callback')
 def callback():
     token = google.authorize_access_token()
     user_info = google.get('https://openidconnect.googleapis.com/v1/userinfo').json()
-    user = User(user_info['sub'], user_info['name'], user_info['email'])
+    user = AppUser(user_info['sub'], user_info['name'], user_info['email'])
     users[user.id] = user
     login_user(user)
     return redirect('/')
@@ -268,7 +278,7 @@ def get_stats():
             """, (current_user.id,))
             category_data = {str(k) if k else "기타": int(v) for k, v in c.fetchall()}
 
-        # ✅ 월별 데이터 (항상 전체, 삭제 제외)
+        # ✅ 월별 데이터 (삭제 제외)
         c.execute("""
             SELECT SUBSTR(date, 1, 7), COALESCE(SUM(amount),0)
             FROM transactions
