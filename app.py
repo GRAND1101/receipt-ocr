@@ -129,6 +129,15 @@ users = {}
 def load_user(user_id):
     return users.get(user_id)
 
+# app = Flask(...) 아래 아무 곳에 추가
+@app.after_request
+def add_no_cache_headers(resp):
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
+
 # ==========================
 # 정적/인증 라우트
 # ==========================
@@ -407,6 +416,8 @@ def delete_transaction_legacy():
         """, (current_user.id, txn_id))
     return jsonify({"status": "success", "deleted_id": txn_id})
 
+
+
 # ==========================
 # 엔트리포인트
 # ==========================
@@ -414,3 +425,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))  # Render는 PORT 사용
     # 개발 편의를 위해 debug는 필요 시만
     app.run(host='0.0.0.0', port=port)
+
